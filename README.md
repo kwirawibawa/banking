@@ -34,7 +34,7 @@ A simple banking transaction service built with **Java Spring Boot** supporting 
 - **Controller Layer:** Handles HTTP requests and returns standardized responses.
 - **Service Layer:** Contains business logic, validation, and **transactional control**.
 - **Repository Layer:** Handles persistence using JPA repositories and **native SQL queries**.
-- **Database Layer:** Stores accounts and transactions with referential integrity and versioning for optimistic locking.
+- **Database:** Tables auto-created using src/main/resources/schema.sql, storing accounts and transactions with referential integrity.
 
 ---
 
@@ -76,6 +76,8 @@ A simple banking transaction service built with **Java Spring Boot** supporting 
 | amount      | DECIMAL(19,2) | Not null                                               |
 | created_at  | TIMESTAMP     | Default current timestamp                              |
 
+Note: All tables (account, transaction) are automatically created at application startup using src/main/resources/schema.sql.
+
 ---
 
 ## 🚀 Getting Started
@@ -105,9 +107,8 @@ mvn spring-boot:run
 http://localhost:8080
 ```
 
-5. Access Points
+5. Database Access Point
 
-- API Base URL → `http://localhost:8080`
 - H2 Console → `http://localhost:8080/h2-console`  
   ```
   JDBC URL: jdbc:h2:mem:bankdb
@@ -155,6 +156,147 @@ GET /api/transactions/account/{accountId}
 
 ---
 
+## Request / Response Examples
+
+### Create Account
+
+```
+POST /api/accounts
+```
+
+**Request Body:**
+
+```json
+{
+  "name": "Wira",
+  "email": "wira@gmail.com"
+}
+```
+
+**Response:**
+
+```json
+{
+  "code": 200,
+  "message": "Account successfully created",
+  "data": {
+    "id": "UUID",
+    "name": "Wira",
+    "email": "wira@gmail.com",
+    "accountNumber": "8236189429",
+    "balance": 0,
+    "active": true
+  }
+}
+```
+
+---
+
+### Create Transaction (Deposit / Withdraw)
+
+```
+POST /api/transactions
+```
+
+**Request Body:**
+
+```json
+{
+  "accountId": "UUID",
+  "type": "DEPOSIT",
+  "amount": 500.00
+}
+```
+
+**Response:**
+
+```json
+{
+  "code": 200,
+  "message": "Transaction successfully processed",
+  "data": {
+    "id": "UUID",
+    "accountId": "UUID",
+    "type": "DEPOSIT",
+    "amount": 500.00,
+    "createdAt": "2025-11-13T00:00:00"
+  }
+}
+```
+
+---
+
+### Transfer
+
+```
+POST /api/transactions/transfer
+```
+
+**Request Body:**
+
+```json
+{
+  "fromAccountId": "UUID",
+  "toAccountId": "UUID",
+  "amount": 100.00
+}
+```
+
+**Response:**
+
+```json
+{
+  "code": 200,
+  "message": "Transfer successfully processed",
+  "data": {
+    "fromAccountId": "UUID",
+    "fromAccountNumber": "1019564279",
+    "fromAccountName": "Kresna",
+    "toAccountId": "UUID",
+    "toAccountNumber": "4991904171",
+    "toAccountName": "Wira",
+    "amount": 100.00,
+    "createdAt": "2025-11-13T00:26:48"
+  }
+}
+```
+
+---
+
+### Get Transactions by Account
+
+```
+GET /api/transactions/account/{accountId}
+```
+
+**Response:**
+
+```json
+{
+  "code": 200,
+  "message": "Successfully retrieved transactions",
+  "data": [
+    {
+      "id": "UUID",
+      "accountId": "UUID",
+      "type": "TRANSFER",
+      "amount": 100.00,
+      "createdAt": "2025-11-13T00:26:48",
+      "direction": "INCOMING"
+    },
+    {
+      "id": "UUID",
+      "accountId": "UUID",
+      "type": "DEPOSIT",
+      "amount": 200.00,
+      "createdAt": "2025-11-12T23:59:59",
+      "direction": null
+    }
+  ]
+}
+```
+---
+
 ## Notes
 
 - All transfer transactions are split into two rows: **OUTGOING** (sender) and **INCOMING** (receiver).  
@@ -167,6 +309,7 @@ GET /api/transactions/account/{accountId}
 - Java Stream is used for mapping and transforming transaction lists.  
 - Fully uses **Spring IoC** / dependency injection.
 
+---
 
 **👨‍💻 Author:** Kresna Wirawibawa
 
