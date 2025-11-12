@@ -27,4 +27,8 @@ public final class CommonConstants {
     public static final String SENDER_ACCOUNT_NOT_FOUND = "Sender account not found";
     public static final String RECEIVER_ACCOUNT_NOT_FOUND = "Receiver account not found";
     public static final String INSUFFICIENT_BALANCE_SENDER = "Insufficient balance in sender account";
+
+    public static final String SUCCESS_CREATE_TRANSACTION = "Transaction successfully created";
+    public static final String SUCCESS_GET_TRANSACTION = "Successfully retrieved transactions";
+    public static final String SUCCESS_TRANSFER = "Transfer successfully processed";
 }

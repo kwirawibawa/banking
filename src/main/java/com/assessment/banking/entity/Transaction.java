@@ -27,6 +27,10 @@ public class Transaction {
     @Column(nullable = false)
     private TransactionType type;
 
+    @Enumerated(EnumType.STRING)
+    @Column
+    private TransferDirection direction;
+
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 }

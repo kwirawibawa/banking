@@ -15,6 +15,7 @@ CREATE TABLE transaction (
     account_id UUID NOT NULL,
     type VARCHAR(10) NOT NULL,
     amount DECIMAL(19,2) NOT NULL,
+    direction VARCHAR(10) DEFAULT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_account FOREIGN KEY(account_id) REFERENCES account(id) ON DELETE CASCADE
 );
