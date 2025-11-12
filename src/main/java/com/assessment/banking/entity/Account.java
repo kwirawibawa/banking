@@ -28,6 +28,9 @@ public class Account {
     @Column(nullable = false)
     private BigDecimal balance = BigDecimal.ZERO;
 
+    @Column(nullable = false)
+    private Boolean isActive = true;
+
     @Version
     private Long version;
 }
