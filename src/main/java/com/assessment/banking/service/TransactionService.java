@@ -1,7 +1,8 @@
 package com.assessment.banking.service;
 
-import com.assessment.banking.request.TransactionRequest;
+import com.assessment.banking.request.TransactionSearchRequest;
 import com.assessment.banking.request.TransferRequest;
+import com.assessment.banking.response.SearchResponse;
 import com.assessment.banking.response.TransactionResponse;
 import com.assessment.banking.response.TransferResponse;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,4 +24,6 @@ public interface TransactionService {
 
     @Transactional(readOnly = true)
     List<TransactionResponse> getTransactionsByAccount(UUID accountId);
+
+    SearchResponse<TransactionResponse> searchTransactions(TransactionSearchRequest request);
 }

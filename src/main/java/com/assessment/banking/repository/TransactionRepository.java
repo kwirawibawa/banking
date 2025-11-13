@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
+public interface TransactionRepository extends JpaRepository<Transaction, UUID>, TransactionRepositoryCustom {
     @Query(
             value = "SELECT * FROM transaction t WHERE t.account_id = :accountId ORDER BY t.created_at DESC",
             nativeQuery = true

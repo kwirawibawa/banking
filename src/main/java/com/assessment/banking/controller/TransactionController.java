@@ -1,8 +1,10 @@
 package com.assessment.banking.controller;
 
 import com.assessment.banking.request.TransactionRequest;
+import com.assessment.banking.request.TransactionSearchRequest;
 import com.assessment.banking.request.TransferRequest;
 import com.assessment.banking.response.ApiResponse;
+import com.assessment.banking.response.SearchResponse;
 import com.assessment.banking.response.TransactionResponse;
 import com.assessment.banking.response.TransferResponse;
 import com.assessment.banking.service.TransactionService;
@@ -24,9 +26,7 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<TransactionResponse>> createTransaction(
-            @RequestBody @Valid TransactionRequest request) {
-
+    public ResponseEntity<ApiResponse<TransactionResponse>> createTransaction(@RequestBody @Valid TransactionRequest request) {
         TransactionResponse response = switch (request.getType().toUpperCase()) {
             case "DEPOSIT" -> transactionService.deposit(request.getAccountId(), request.getAmount());
             case "WITHDRAW" -> transactionService.withdraw(request.getAccountId(), request.getAmount());
@@ -43,9 +43,7 @@ public class TransactionController {
     }
 
     @PostMapping("/transfer")
-    public ResponseEntity<ApiResponse<TransferResponse>> transfer(
-            @RequestBody @Valid TransferRequest request) {
-
+    public ResponseEntity<ApiResponse<TransferResponse>> transfer(@RequestBody @Valid TransferRequest request) {
         TransferResponse response = transactionService.transfer(request);
 
         return ResponseEntity.ok(
@@ -58,9 +56,7 @@ public class TransactionController {
     }
 
     @GetMapping("/account/{accountId}")
-    public ResponseEntity<ApiResponse<List<TransactionResponse>>> getTransactionsByAccount(
-            @PathVariable UUID accountId) {
-
+    public ResponseEntity<ApiResponse<List<TransactionResponse>>> getTransactionsByAccount(@PathVariable UUID accountId) {
         List<TransactionResponse> transactions = transactionService.getTransactionsByAccount(accountId);
 
         return ResponseEntity.ok(
@@ -70,6 +66,11 @@ public class TransactionController {
                         .data(transactions)
                         .build()
         );
+    }
+
+    @PostMapping("/search")
+    public SearchResponse<TransactionResponse> searchBooks(@RequestBody @Valid TransactionSearchRequest request) {
+        return transactionService.searchTransactions(request);
     }
 }
 

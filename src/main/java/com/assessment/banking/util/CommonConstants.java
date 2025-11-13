@@ -31,4 +31,5 @@ public final class CommonConstants {
     public static final String SUCCESS_CREATE_TRANSACTION = "Transaction successfully created";
     public static final String SUCCESS_GET_TRANSACTION = "Successfully retrieved transactions";
     public static final String SUCCESS_TRANSFER = "Transfer successfully processed";
+    public static final String SUCCESS_SEARCH_TRANSACTION = "Transactions search completed successfully";
 }

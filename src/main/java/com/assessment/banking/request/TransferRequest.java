@@ -15,14 +15,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class TransferRequest {
-
-    @NotNull
+    @NotNull(message = "Sender account ID is required")
     private UUID fromAccountId;
 
-    @NotNull
+    @NotNull(message = "Receiver account ID is required")
     private UUID toAccountId;
 
-    @NotNull
-    @Positive
+    @NotNull(message = "Amount is required")
+    @Positive(message = "Amount must be greater than zero")
     private BigDecimal amount;
 }

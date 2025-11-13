@@ -7,15 +7,19 @@ import com.assessment.banking.entity.TransferDirection;
 import com.assessment.banking.exception.FailedTransactionException;
 import com.assessment.banking.repository.AccountRepository;
 import com.assessment.banking.repository.TransactionRepository;
+import com.assessment.banking.request.TransactionSearchRequest;
 import com.assessment.banking.request.TransferRequest;
+import com.assessment.banking.response.SearchResponse;
 import com.assessment.banking.response.TransactionResponse;
 import com.assessment.banking.response.TransferResponse;
 import com.assessment.banking.util.CommonConstants;
+import com.assessment.banking.util.CommonPaging;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -132,6 +136,40 @@ public class TransactionServiceImpl implements TransactionService {
         return transactions.stream()
                 .map(this::mapToResponse)
                 .toList();
+    }
+
+    @Override
+    public SearchResponse<TransactionResponse> searchTransactions(TransactionSearchRequest request) {
+        accountRepository.findById(request.getAccountId())
+                .orElseThrow(() -> new FailedTransactionException(CommonConstants.ACCOUNT_NOT_FOUND));
+
+        LocalDate start = request.getStartDate() != null ? request.getStartDate().toLocalDate() : null;
+        LocalDate end = request.getEndDate() != null ? request.getEndDate().toLocalDate() : null;
+
+        if (start != null) {
+            request.setStartDate(start.atStartOfDay());
+        }
+        if (end != null) {
+            request.setEndDate(end.atTime(23, 59, 59));
+        }
+
+        Long total = transactionRepository.searchCount(request);
+        List<TransactionResponse> data = transactionRepository.searchData(request);
+
+        CommonPaging paging = new CommonPaging(request.getPageNumber(), request.getPageSize(), total);
+
+        return new SearchResponse<>(
+                request.getPageNumber(),
+                request.getPageSize(),
+                paging.getNumberOfElements(),
+                total,
+                (long) Math.ceil((double) total / request.getPageSize()),
+                paging.getStartData(),
+                paging.getEndData(),
+                data,
+                200,
+                CommonConstants.SUCCESS_SEARCH_TRANSACTION
+        );
     }
 
     private TransactionResponse buildTransactionResponse(Transaction transaction) {
