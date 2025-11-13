@@ -23,6 +23,7 @@ A simple banking transaction service built with **Java Spring Boot** supporting 
 - Create **Deposit** and **Withdraw** transactions
 - Perform **Transfers** between accounts with **direction tracking**
 - Retrieve **transaction history** by account
+- **Search transactions** with filters: accountId, type, date range, and paging  
 - Supports **validation** and **transactional integrity** (atomic operations)
 - Uses **optimistic locking** for accounts
 - Simple **REST API** responses with standard format
@@ -152,6 +153,13 @@ POST /api/transactions/transfer
 - **Get Transactions by Account**
 ```
 GET /api/transactions/account/{accountId}
+```
+- **Search Transactions**
+```
+POST /api/transactions/search
+```
+```
+Filters: accountId (required), type (optional), startDate / endDate (optional), pageNumber, pageSize
 ```
 
 ---
@@ -295,6 +303,50 @@ GET /api/transactions/account/{accountId}
   ]
 }
 ```
+### Search Transactions (with paging & filters)
+
+```
+POST /api/transactions/search
+```
+
+**Request Body:**
+
+```json
+{
+  "accountId": "UUID",
+  "type": "WITHDRAW",
+  "startDate": "2025-11-01",
+  "endDate": "2025-11-13",
+  "pageNumber": 1,
+  "pageSize": 1
+}
+```
+
+**Response:**
+
+```json
+{
+    "pageNo": 1,
+    "pageSize": 1,
+    "totalDataInPage": 1,
+    "totalData": 2,
+    "totalPages": 2,
+    "startData": 1,
+    "endData": 1,
+    "listData": [
+        {
+            "id": "82da9daf-ccc7-3f38-bc16-557ca1f547bd",
+            "accountId": "f1759912-ba32-30f2-a6d5-d7bcfd453481",
+            "type": "WITHDRAW",
+            "amount": 100.00,
+            "createdAt": "2025-11-13T10:14:34.402648",
+            "direction": null
+        }
+    ],
+    "code": 200,
+    "message": "Transactions search completed successfully"
+}
+```
 ---
 
 ## Notes
@@ -304,7 +356,7 @@ GET /api/transactions/account/{accountId}
 - Transaction history API **correctly reflects the transfer direction**.  
 - Operations are **atomic and transactional**, ensuring consistency across related updates.  
 - **Optimistic locking** is implemented in accounts via the `version` column.  
-- API responses are wrapped in `ApiResponse<T>` with `code`, `message`, and `data`.  
+- API responses are wrapped in ApiResponse<T> or SearchResponse<T> with code, message, data, and paging info. 
 - Some repository methods use **native SQL queries** while others use JPA `findById`.  
 - Java Stream is used for mapping and transforming transaction lists.  
 - Fully uses **Spring IoC** / dependency injection.
